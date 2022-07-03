@@ -5,12 +5,6 @@ let activities = ["d", "g", "r", "s", "w"]
 let rawX : number[] = []
 let rawY : number[] = []
 let rawZ : number[] = []
-function collect_xyz_data() {
-    rawX.push(input.acceleration(Dimension.X))
-    rawY.push(input.acceleration(Dimension.Y))
-    rawZ.push(input.acceleration(Dimension.Z))
-}
-
 function average(list1: number[]): number {
     let sum = 0
     for (let value of list1) {
@@ -44,7 +38,7 @@ function maximum(list4: number[]): number {
 }
 
 // feature_package order: avg x,y,z, sd x,y,z, min x,y,z, max x,y,z
-function feature_package(listx: any[], listy: any[], listz: any[]): any[] {
+function feature_package(listx: number[], listy: number[], listz: number[]): any[] {
     let to_return = []
     to_return.push(average(listx))
     to_return.push(average(listy))
@@ -72,7 +66,7 @@ function predict(list5: number[]): number {
         for (j = 0; j < 12; j++) {
             dot_product += coef[i][j] * list5[j]
         }
-        if (dot_product > 0) {
+        if (dot_product + k[i] > 0) {
             votingPool.push(1)
         } else {
             votingPool.push(0)
@@ -100,19 +94,11 @@ function predict(list5: number[]): number {
 }
 
 basic.forever(function on_forever() {
-    let rawX: number[];
-    let rawY: number[];
-    let rawZ: number[];
-    if (rawZ.length == 19) {
-        basic.showString(activities[predict(feature_package(rawX, rawY, rawZ))])
-        rawX = []
-        rawY = []
-        rawZ = []
-    } else {
-        for (let index = 0; index < 19; index++) {
-            collect_xyz_data()
-            basic.pause(100)
-        }
+    for (let index = 0; index < 19; index++) {
+        rawX.push(input.acceleration(Dimension.X))
+        rawY.push(input.acceleration(Dimension.Y))
+        rawZ.push(input.acceleration(Dimension.Z))
+        basic.pause(100)
     }
-    
+    basic.showNumber(predict(feature_package(rawX, rawY, rawZ)))
 })

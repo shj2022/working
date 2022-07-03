@@ -11,7 +11,7 @@ coef = [
         1.05594195e00,
         5.56153691e00,
         -1.82321149e00,
-        3.11302786e00,
+        3.11302786e00
     ],
     [
         -2.28996821e-01,
@@ -25,7 +25,7 @@ coef = [
         6.06842509e-01,
         -2.29237265e-01,
         -5.07552657e-01,
-        -2.36787949e-01,
+        -2.36787949e-01
     ],
     [
         -1.44074647e-02,
@@ -39,7 +39,7 @@ coef = [
         -1.19943660e-01,
         9.13172877e-02,
         7.88469482e-03,
-        8.88160611e-02,
+        8.88160611e-02
     ],
     [
         -4.67224263e-03,
@@ -53,7 +53,7 @@ coef = [
         -1.14023123e-01,
         3.92913471e-02,
         -1.61734935e-01,
-        1.94218811e-01,
+        1.94218811e-01
     ],
     [
         -1.25732316e00,
@@ -67,7 +67,7 @@ coef = [
         -2.52321946e-01,
         -3.19470424e00,
         1.39736746e00,
-        1.39754740e00,
+        1.39754740e00
     ],
     [
         -4.73278868e-01,
@@ -81,7 +81,7 @@ coef = [
         -2.03291108e-01,
         1.61520722e-02,
         1.91197209e-01,
-        1.60936868e-01,
+        1.60936868e-01
     ],
     [
         -4.13909495e00,
@@ -95,7 +95,7 @@ coef = [
         -1.85353449e00,
         2.85641216e00,
         1.40697017e-01,
-        7.84987578e-01,
+        7.84987578e-01
     ],
     [
         5.21515609e-02,
@@ -109,7 +109,7 @@ coef = [
         -1.39901464e-02,
         2.94869761e-01,
         7.06936696e-01,
-        1.47095912e-01,
+        1.47095912e-01
     ],
     [
         1.56095082e00,
@@ -123,7 +123,7 @@ coef = [
         -3.34754411e-01,
         5.64648784e00,
         9.98539073e-01,
-        2.44551537e00,
+        2.44551537e00
     ],
     [
         -5.05885711e00,
@@ -137,8 +137,8 @@ coef = [
         -3.77601693e00,
         -7.43468823e00,
         -5.16760172e00,
-        -2.55433421e00,
-    ],
+        -2.55433421e00
+    ]
 ]
 k = [
     -15.03947674,
@@ -158,11 +158,6 @@ activities = ["d", "g", "r", "s", "w"]
 rawX: List[number] = []
 rawY: List[number] = []
 rawZ: List[number] = []
-
-def collect_xyz_data():
-    rawX.append(input.acceleration(Dimension.X))
-    rawY.append(input.acceleration(Dimension.Y))
-    rawZ.append(input.acceleration(Dimension.Z))
 
 def average(list1: List[number]):
     sum = 0
@@ -189,7 +184,7 @@ def maximum(list4: List[number]):
     return val2
 
 #feature_package order: avg x,y,z, sd x,y,z, min x,y,z, max x,y,z
-def feature_package(listx: List[any], listy: List[any], listz: List[any]):
+def feature_package(listx: List[number], listy: List[number], listz: List[number]):
     to_return = []
     to_return.append(average(listx))
     to_return.append(average(listy))
@@ -212,7 +207,7 @@ def predict(list5: List[number]):
         dot_product = 0
         for j in range(12):
             dot_product += coef[i][j] * list5[j]
-        if dot_product>0:
+        if (dot_product + k[i])>0:
             votingPool.append(1)
         else:
             votingPool.append(0)
@@ -230,17 +225,13 @@ def predict(list5: List[number]):
         count[votes[i]] +=1
     return count.index(maximum(count))
 
-
-
 def on_forever():
-    if len(rawZ)==19:
-        basic.show_string(activities[predict(feature_package(rawX, rawY, rawZ))])
-        rawX=[]
-        rawY=[]
-        rawZ=[]
-    else:
-        for index in range(19):
-            collect_xyz_data()
-            basic.pause(100)
+    for index in range(19):
+        rawX.append(input.acceleration(Dimension.X))
+        rawY.append(input.acceleration(Dimension.Y))
+        rawZ.append(input.acceleration(Dimension.Z))
+        basic.pause(100)
+    basic.show_number(predict(feature_package(rawX, rawY, rawZ)))
+
 
 basic.forever(on_forever)
