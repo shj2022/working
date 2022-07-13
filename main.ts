@@ -1,6 +1,9 @@
-let coef = [[-1.25559259e+00, -3.64287262e+00, 6.23931121e-01, -2.98794925e+00, 4.63243881e-01, 1.51791457e+01, 3.32257870e+00, -1.65215245e+00, -2.62031387e+00, -4.54590336e+00, 2.83757446e-01, -9.23485276e+00], [-4.45286659e-01, -2.44126116e+00, -2.10854371e-02, -1.56872540e+00, 2.29116992e+00, 1.27184480e+00, -4.79484458e-01, 1.00925036e+00, -9.80969787e-01, -5.28261302e-01, -7.33210855e-01, -5.75732606e-01], [4.71966984e-01, -4.95658490e-01, -2.72628566e-01, 1.06756085e-01, 2.37943589e-01, 1.91411055e-01, -1.16208288e-01, -4.21438699e-01, -1.91337364e-01, 1.92180099e-01, -1.13539977e-02, 2.01927781e-01], [1.28446274e+00, -2.81572444e-01, -1.74115394e-01, -4.48268439e-03, 5.16905644e-01, 1.49862955e+00, -2.84969515e-01, -1.72261488e+00, -1.55150410e+00, -1.95601285e-01, -6.43299828e-01, -1.69429445e-01], [1.88408306e+00, -1.53047884e+00, 4.08225346e+00, 7.35745378e-01, 5.55736318e+00, -5.90018721e+00, -7.98906290e-01, 4.94179309e-01, -1.28760594e+00, -1.47672109e+00, -3.43046930e-01, 1.08309550e+00], [2.14938745e-01, -1.72978332e-01, -8.40785145e-02, 2.03108524e-01, 2.60658710e-01, 8.40343456e-02, -1.90437311e-01, -2.51931925e-01, -1.22987540e-01, 2.08035651e-01, 2.99450082e-01, 1.06837773e-01], [5.71337237e-01, 4.46123048e-02, 8.68765380e-02, 5.48343770e-01, 9.47958882e-01, 1.17638906e-01, -4.30218667e-01, -7.97367241e-01, 8.31381338e-02, 4.23411869e-01, 4.47577241e-02, 3.16100112e-02], [1.01723199e-01, -1.38135005e-01, -1.06953349e-01, 7.23306860e-02, 1.98532321e-01, 1.28571679e-01, -6.86410030e-02, -2.15069824e-01, -1.42902801e-01, 1.11090551e-01, 4.78264366e-01, 1.65474443e-01], [1.17212916e+00, 5.81003894e-01, -6.60101063e-01, 3.34741720e-01, 9.74755382e-01, 1.03317305e+00, -7.28746560e-01, -1.78033901e+00, 8.46354367e-01, 3.81552200e-01, 4.24616016e-01, 2.00862903e-01], [-2.56381072e+00, 3.56478582e-01, 2.76057455e+00, -1.05145269e+01, 1.44091666e+00, 1.67809438e+00, -5.80544243e+00, 7.34287406e+00, -1.68369015e+00, -9.63797316e+00, -4.89779450e+00, -1.93717331e+00]]
-let k = [-9.14427219e+00, -3.28832520e+00, 9.74994008e-03, -1.16838421e+00, -1.14273751e+00, 6.73513776e-01, 3.55781141e-01, 6.52481403e-01, 9.01483623e-01, -2.21033551e+01]
-let activities = ["dribble", "golf", "jj", "stand", "walk"]
+let coef = [[0.10963895, 0.02723599, 0.10535175, 0.19965075, 0.24600669, 0.06394153, -0.15431845, -0.18816476, -0.02524695, 0.26378745, 0.65108406, 0.14903605], [0.61551609, -1.31338941, 1.74271502, -0.49343831, -1.27864056, 2.0784214, -1.58883587, -0.7473317, -1.22590301, 5.33397431, 1.24201883, 1.79536266], [-6.10033167, -5.46986308, 5.09977553, -6.83294808, -4.28670549, 0.15561244, -0.20547375, 0.93845263, -4.99083949, -6.8734065, -6.35737184, -3.81187896]]
+let k = [0.28474044, -1.23337305, -14.93005065]
+let scaler_mean = [-177.49580002, 927.10854913, -163.72348515, 312.63142712, 351.69002439, 359.27993714, -797.10036224, 288.60174728, -753.44470488, 426.20157682, 1529.88450884, 539.82356701]
+let scaler_sd = [125.91510909481914, 156.49300940209812, 174.79891444917297, 325.09976546281416, 338.7878326247359, 435.92219514504393, 656.7745575620055, 755.5875313344801, 782.2884878775202, 715.0762613287798, 421.59867159421276, 736.7242516961014]
+//  run, stand, walk (sklearn encodes in alphabetic order)
+let activities = ["r", "s", "w"]
 //  raw accelerometer data collection by timestamp (100ms)
 let rawX : number[] = []
 let rawY : number[] = []
@@ -40,18 +43,18 @@ function maximum(list4: number[]): number {
 // feature_package order: avg x,y,z, sd x,y,z, min x,y,z, max x,y,z
 function feature_package(listx: number[], listy: number[], listz: number[]): any[] {
     let to_return = []
-    to_return.push(average(listx))
-    to_return.push(average(listy))
-    to_return.push(average(listz))
-    to_return.push(sd(listx))
-    to_return.push(sd(listy))
-    to_return.push(sd(listz))
-    to_return.push(minimum(listx))
-    to_return.push(minimum(listy))
-    to_return.push(minimum(listz))
-    to_return.push(maximum(listx))
-    to_return.push(maximum(listy))
-    to_return.push(maximum(listz))
+    to_return.push((average(listx) - scaler_mean[0]) / scaler_sd[0])
+    to_return.push((average(listy) - scaler_mean[1]) / scaler_sd[1])
+    to_return.push((average(listz) - scaler_mean[2]) / scaler_sd[2])
+    to_return.push((sd(listx) - scaler_mean[3]) / scaler_sd[3])
+    to_return.push((sd(listy) - scaler_mean[4]) / scaler_sd[4])
+    to_return.push((sd(listz) - scaler_mean[5]) / scaler_sd[5])
+    to_return.push((minimum(listx) - scaler_mean[6]) / scaler_sd[6])
+    to_return.push((minimum(listy) - scaler_mean[7]) / scaler_sd[7])
+    to_return.push((minimum(listz) - scaler_mean[8]) / scaler_sd[8])
+    to_return.push((maximum(listx) - scaler_mean[9]) / scaler_sd[9])
+    to_return.push((maximum(listy) - scaler_mean[10]) / scaler_sd[10])
+    to_return.push((maximum(listz) - scaler_mean[11]) / scaler_sd[11])
     return to_return
 }
 
@@ -61,7 +64,7 @@ function predict(list5: number[]): number {
     let dot_product: number;
     let j: number;
     let votingPool : number[] = []
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < 3; i++) {
         dot_product = 0
         for (j = 0; j < 12; j++) {
             dot_product += coef[i][j] * list5[j]
@@ -86,7 +89,7 @@ function predict(list5: number[]): number {
             currentIndex += 1
         }
     }
-    let count = [0, 0, 0, 0, 0]
+    let count = [0, 0, 0]
     for (i = 0; i < votes.length; i++) {
         count[votes[i]] += 1
     }
