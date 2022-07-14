@@ -96,17 +96,20 @@ function predict(list5: number[]): number {
     return _py.py_array_index(count, maximum(count))
 }
 
+for (let index = 0; index < 20; index++) {
+    rawX.push(input.acceleration(Dimension.X))
+    rawY.push(input.acceleration(Dimension.Y))
+    rawZ.push(input.acceleration(Dimension.Z))
+    basic.pause(100)
+}
 basic.forever(function on_forever() {
-    for (let index = 0; index < 19; index++) {
-        rawX.push(input.acceleration(Dimension.X))
-        rawY.push(input.acceleration(Dimension.Y))
-        rawZ.push(input.acceleration(Dimension.Z))
-        basic.pause(100)
-    }
     basic.showString(activities[predict(feature_package(rawX, rawY, rawZ))])
-    for (let i = 0; i < 19; i++) {
-        rawX.removeAt(i)
-        rawY.removeAt(i)
-        rawZ.removeAt(i)
-    }
+    basic.clearScreen()
+    rawX.removeAt(0)
+    rawY.removeAt(0)
+    rawZ.removeAt(0)
+    rawX.push(input.acceleration(Dimension.X))
+    rawY.push(input.acceleration(Dimension.Y))
+    rawZ.push(input.acceleration(Dimension.Z))
+    basic.pause(1)
 })

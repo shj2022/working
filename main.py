@@ -99,15 +99,20 @@ def predict(list5: List[number]):
     return count.index(maximum(count))
 
 def on_forever():
-    for index in range(19):
-        rawX.append(input.acceleration(Dimension.X))
-        rawY.append(input.acceleration(Dimension.Y))
-        rawZ.append(input.acceleration(Dimension.Z))
-        basic.pause(100)
     basic.show_string(activities[predict(feature_package(rawX, rawY, rawZ))])
-    for i in range(19):
-        rawX.removeAt(i)
-        rawY.removeAt(i)
-        rawZ.removeAt(i)
+    basic.clear_screen()
+    rawX.remove_at(0)
+    rawY.remove_at(0)
+    rawZ.remove_at(0)
+    rawX.append(input.acceleration(Dimension.X))
+    rawY.append(input.acceleration(Dimension.Y))
+    rawZ.append(input.acceleration(Dimension.Z))
+    basic.pause(1)
+
+for index in range(20):
+    rawX.append(input.acceleration(Dimension.X))
+    rawY.append(input.acceleration(Dimension.Y))
+    rawZ.append(input.acceleration(Dimension.Z))
+    basic.pause(100)
 
 basic.forever(on_forever)
